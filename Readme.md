@@ -1,7 +1,7 @@
 # Учебный проект «Код и Магия» [![Build status][travis-image]][travis-url]
 
 * Студент: [Никита Ларичкин](https://up.htmlacademy.ru/javascript/17/user/926049).
-* Наставник: `Неизвестно`.
+* Наставник: [Андрей Рыжаков](https://htmlacademy.ru/profile/id201015).
 
 ---
 
