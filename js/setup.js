@@ -78,7 +78,7 @@ setupOpen.addEventListener('keydown', function (evt) {
 });
 
 setupClose.addEventListener('click', function () {
-  closePopup()
+  closePopup();
 });
 
 setupClose.addEventListener('keydown', function (evt) {
