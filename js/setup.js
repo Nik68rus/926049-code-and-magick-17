@@ -7,6 +7,8 @@ var EYES_COLORS = ['black', 'red', 'blue', 'yellow', 'green'];
 var FIREBALL_COLORS = ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'];
 var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
+var SETUP_START_X = '50%';
+var SETUP_START_Y = '80px';
 
 var setupWindow = document.querySelector('.setup');
 
@@ -60,6 +62,8 @@ var onPopupEscPress = function (evt) {
 var openPopup = function () {
   setupWindow.classList.remove('hidden');
   document.addEventListener('keydown', onPopupEscPress);
+  setupWindow.style.left = SETUP_START_X;
+  setupWindow.style.top = SETUP_START_Y;
 };
 
 var closePopup = function () {
@@ -123,4 +127,54 @@ curentWizardFireball.addEventListener('click', function () {
   if (i === FIREBALL_COLORS.length) {
     i = 0;
   }
+});
+
+//  сделаем окно подвижным
+
+var dialogHandler = setupWindow.querySelector('.upload');
+
+dialogHandler.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+
+  var dragged = false;
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+    dragged = true;
+
+    var shift = {
+      x: moveEvt.clientX - startCoords.x,
+      y: moveEvt.clientY - startCoords.y
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    setupWindow.style.top = (setupWindow.offsetTop + shift.y) + 'px';
+    setupWindow.style.left = (setupWindow.offsetLeft + shift.x) + 'px';
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+
+    if (dragged) {
+      var onClickPreventDefault = function (upPrevEvt) {
+        upPrevEvt.preventDefault();
+        dialogHandler.removeEventListener('click', onClickPreventDefault);
+      };
+      dialogHandler.addEventListener('click', onClickPreventDefault);
+    }
+
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
 });
