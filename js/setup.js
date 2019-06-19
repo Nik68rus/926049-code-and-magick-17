@@ -7,6 +7,8 @@ var EYES_COLORS = ['black', 'red', 'blue', 'yellow', 'green'];
 var FIREBALL_COLORS = ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'];
 var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
+var SETUP_START_X = '50%';
+var SETUP_START_Y = '80px';
 
 var setupWindow = document.querySelector('.setup');
 
@@ -60,6 +62,8 @@ var onPopupEscPress = function (evt) {
 var openPopup = function () {
   setupWindow.classList.remove('hidden');
   document.addEventListener('keydown', onPopupEscPress);
+  setupWindow.style.left = SETUP_START_X;
+  setupWindow.style.top = SETUP_START_Y;
 };
 
 var closePopup = function () {
