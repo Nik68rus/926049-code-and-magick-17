@@ -1,20 +1,38 @@
 'use strict';
 
-window.util = (function () {
-  var ESC_KEYCODE = 27;
-  var ENTER_KEYCODE = 13;
+(function () {
+  var DEBOUNCE_DELAY = 300; // ms
 
-  return {
-    isEscEvent: function (evt, action) {
-      if (evt.keyCode === ESC_KEYCODE) {
-        action();
+  var debounce = function (onTimeout, delay) {
+    var lastTieoutId = null;
+    return function () {
+      var parameters = arguments;
+      if (lastTieoutId !== null) {
+        clearTimeout(lastTieoutId);
       }
+      lastTieoutId = setTimeout(function () {
+        onTimeout.apply(null, parameters);
+      }, delay || DEBOUNCE_DELAY);
+    };
+  };
+
+  var isEnterKey = function (evt) {
+    return evt.key === 'Enter';
+  };
+
+  var isEscapeKey = function (evt) {
+    return evt.key === 'Escape' || evt.key === 'Esc';
+  };
+
+  window.util = {
+    isEscEvent: function (evt, action) {
+      return isEscapeKey && action();
     },
 
     isEnterEvent: function (evt, action) {
-      if (evt.keyCode === ENTER_KEYCODE) {
-        action();
-      }
-    }
+      return isEnterKey && action();
+    },
+
+    debounce: debounce,
   };
 })();
