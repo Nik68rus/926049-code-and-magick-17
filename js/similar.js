@@ -17,16 +17,18 @@
     return rank;
   };
 
+  var getSimilarWizards = function (left, right) {
+    var rankDiff = getRank(right) - getRank(left);
+    return rankDiff === 0
+      ? left.name.localeCompare(right.name, 'ru', {sensitivity: 'base'})
+      : rankDiff;
+  };
+
+  var getSortedSimilarWizards = function (similarWizards) {
+    return similarWizards.sort(getSimilarWizards);
+  };
+
   var updateWizards = function () {
-    var getSimilarWizards = function (left, right) {
-      var rankDiff = getRank(right) - getRank(left);
-      return rankDiff === 0 ? left.name.localeCompare(right.name, 'ru', {sensitivity: 'base'}) : rankDiff;
-    };
-
-    var getSortedSimilarWizards = function (similarWizards) {
-      return similarWizards.sort(getSimilarWizards);
-    };
-
     window.render(getSortedSimilarWizards(wizards));
   };
 
@@ -53,7 +55,12 @@
     node.style.right = 0;
     node.style.fontSize = '30px';
     node.textContent = errorMessage;
+    node.classList.add('error-message');
     document.body.insertAdjacentElement('afterbegin', node);
+    var loadErrorMessage = document.querySelector('.error-message');
+    loadErrorMessage.addEventListener('click', function () {
+      document.body.removeChild(loadErrorMessage);
+    });
   };
 
   load(successHandler, errorHandler);

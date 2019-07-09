@@ -1,25 +1,25 @@
 'use strict';
 
-(function (makeOnMouseDown) {
+(function (makeDragStart) {
   var setup = document.querySelector('.setup');
   var setupUpload = setup.querySelector('.upload');
 
-  var onUploadMouseMove = function (x, y) {
-    setup.style.left = setup.offsetLeft - x + 'px';
-    setup.style.top = setup.offsetTop - y + 'px';
+  var onSetupDragMove = function (x, y) {
+    setup.style.left = setup.offsetLeft + x + 'px';
+    setup.style.top = setup.offsetTop + y + 'px';
   };
 
   var preventDefaultClick = function (evt) {
     evt.preventDefault();
   };
 
-  var onUploadMouseUp = function () {
+  var onSetupDragEnd = function () {
     setupUpload.addEventListener('click', preventDefaultClick, {once: true});
   };
 
-  var onUploadMouseDown = makeOnMouseDown(onUploadMouseMove, onUploadMouseUp);
+  var onSetupDragStart = makeDragStart(onSetupDragMove, onSetupDragEnd);
 
-  setupUpload.addEventListener('mousedown', onUploadMouseDown);
+  setupUpload.addEventListener('mousedown', onSetupDragStart);
 
   // реализуем перетаскивание в рюкзак
 
@@ -29,7 +29,6 @@
   shopElement.addEventListener('dragstart', function (evt) {
     if (evt.target.tagName.toLowerCase() === 'img') {
       draggedItem = evt.target;
-      evt.dataTransfer.setData('text/plain', evt.target.alt);
     }
   });
 
@@ -37,7 +36,6 @@
 
   artifactsElement.addEventListener('dragover', function (evt) {
     evt.preventDefault();
-    return false;
   });
 
   artifactsElement.addEventListener('drop', function (evt) {
@@ -60,13 +58,14 @@
   artifactsElement.addEventListener('dragstart', function (evt) {
     if (evt.target.tagName.toLowerCase() === 'img') {
       draggedItem = evt.target;
-      evt.dataTransfer.setData('text/plain', evt.target.alt);
+    } else {
+      evt.preventDefault();
+      return;
     }
   });
 
   shopElement.addEventListener('dragover', function (evt) {
     evt.preventDefault();
-    return false;
   });
 
   shopElement.addEventListener('drop', function (evt) {
@@ -89,5 +88,5 @@
     evt.target.style.backgroundColor = '';
     evt.preventDefault();
   });
-})(window.util.makeOnMouseDown);
+})(window.util.makeDragStart);
 

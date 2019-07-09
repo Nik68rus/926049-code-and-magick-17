@@ -24,37 +24,42 @@
     return evt.key === 'Escape' || evt.key === 'Esc';
   };
 
-  var makeOnMouseDown = function (onMove, onUp) {
+  // проверка на движение
+  var hasMove = function (start, end) {
+    return start.clientX !== end.clientX
+      || start.clientY !== end.clientY;
+  };
+
+  var makeDragStart = function (onMove, onEnd) {
     return function (evt) {
       evt.preventDefault();
-
       var start = {
-        x: evt.clientX,
-        y: evt.clientY
+        clientX: evt.clientX,
+        clientY: evt.clientY,
       };
-
-      var dragged = false;
 
       var onMouseMove = function (moveEvt) {
         moveEvt.preventDefault();
-        onMove(start.x - moveEvt.clientX, start.y - moveEvt.clientY);
-
-        start.x = moveEvt.clientX;
-        start.y = moveEvt.clientY;
-        dragged = true;
+        onMove(moveEvt.movementX, moveEvt.movementY);
       };
+
       var onMouseUp = function (upEvt) {
         upEvt.preventDefault();
-        if (dragged) {
-          onUp();
-        }
-
         document.removeEventListener('mousemove', onMouseMove);
+        return hasMove(start, upEvt) && onEnd();
       };
 
       document.addEventListener('mousemove', onMouseMove);
       document.addEventListener('mouseup', onMouseUp, {once: true});
     };
+  };
+
+  var showElement = function (element) {
+    element.classList.remove('hidden');
+  };
+
+  var hideElement = function (element) {
+    element.classList.add('hidden');
   };
 
   window.util = {
@@ -66,7 +71,9 @@
       return isEnterKey && action();
     },
 
-    makeOnMouseDown: makeOnMouseDown,
+    makeDragStart: makeDragStart,
     debounce: debounce,
+    showElement: showElement,
+    hideElement: hideElement,
   };
 })();

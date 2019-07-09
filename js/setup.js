@@ -11,20 +11,23 @@
 
   var setupOpen = document.querySelector('.setup-open');
   var setupClose = setupWindow.querySelector('.setup-close');
+  var wizardName = setupWindow.querySelector('.setup-user-name');
 
   var onPopupEscPress = function (evt) {
-    window.util.isEscEvent(evt, closePopup);
+    if (wizardName !== document.activeElement) {
+      window.util.isEscEvent(evt, closePopup);
+    }
   };
 
   var openPopup = function () {
-    setupWindow.classList.remove('hidden');
+    window.util.showElement(setupWindow);
     document.addEventListener('keydown', onPopupEscPress);
     setupWindow.style.left = SETUP_START_X;
     setupWindow.style.top = SETUP_START_Y;
   };
 
   var closePopup = function () {
-    setupWindow.classList.add('hidden');
+    window.util.hideElement(setupWindow);
     document.removeEventListener('keydown', onPopupEscPress);
   };
 
@@ -48,7 +51,7 @@
   form.addEventListener('submit', function (evt) {
     evt.preventDefault();
     window.backend.save(new FormData(form), function () {
-      setupWindow.classList.add('hidden');
+      window.util.hideElement(setupWindow);
     });
   });
 })();
