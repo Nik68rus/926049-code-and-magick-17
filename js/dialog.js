@@ -1,77 +1,47 @@
 'use strict';
 
-(function () {
-  var dialog = document.querySelector('.setup');
-  var dialogHandler = dialog.querySelector('.upload');
+(function (makeDragStart) {
+  var setup = document.querySelector('.setup');
+  var setupUpload = setup.querySelector('.upload');
 
-  dialogHandler.addEventListener('mousedown', function (evt) {
+  var onSetupDragMove = function (x, y) {
+    setup.style.left = setup.offsetLeft + x + 'px';
+    setup.style.top = setup.offsetTop + y + 'px';
+  };
+
+  var preventDefaultClick = function (evt) {
     evt.preventDefault();
-    var startCoords = {
-      x: evt.clientX,
-      y: evt.clientY
-    };
+  };
 
-    var dragged = false;
+  var onSetupDragEnd = function () {
+    setupUpload.addEventListener('click', preventDefaultClick, {once: true});
+  };
 
-    var onMouseMove = function (moveEvt) {
-      moveEvt.preventDefault();
-      dragged = true;
+  var onSetupDragStart = makeDragStart(onSetupDragMove, onSetupDragEnd);
 
-      var shift = {
-        x: moveEvt.clientX - startCoords.x,
-        y: moveEvt.clientY - startCoords.y
-      };
-
-      startCoords = {
-        x: moveEvt.clientX,
-        y: moveEvt.clientY
-      };
-
-      dialog.style.top = (dialog.offsetTop + shift.y) + 'px';
-      dialog.style.left = (dialog.offsetLeft + shift.x) + 'px';
-    };
-
-    var onMouseUp = function (upEvt) {
-      upEvt.preventDefault();
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-
-      if (dragged) {
-        var onClickPreventDefault = function (upPrevEvt) {
-          upPrevEvt.preventDefault();
-          dialogHandler.removeEventListener('click', onClickPreventDefault);
-        };
-        dialogHandler.addEventListener('click', onClickPreventDefault);
-      }
-
-    };
-
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-  });
+  setupUpload.addEventListener('mousedown', onSetupDragStart);
 
   // реализуем перетаскивание в рюкзак
 
-  var shopElement = document.querySelector('.setup-artifacts-shop');
+  var shopElement = setup.querySelector('.setup-artifacts-shop');
   var draggedItem = null;
 
   shopElement.addEventListener('dragstart', function (evt) {
     if (evt.target.tagName.toLowerCase() === 'img') {
       draggedItem = evt.target;
-      evt.dataTransfer.setData('text/plain', evt.target.alt);
     }
   });
 
-  var artifactsElement = document.querySelector('.setup-artifacts');
+  var artifactsElement = setup.querySelector('.setup-artifacts');
 
   artifactsElement.addEventListener('dragover', function (evt) {
     evt.preventDefault();
-    return false;
   });
 
   artifactsElement.addEventListener('drop', function (evt) {
     evt.target.style.backgroundColor = '';
     evt.target.appendChild(draggedItem);
+    draggedItem = null;
   });
 
 
@@ -88,19 +58,21 @@
   artifactsElement.addEventListener('dragstart', function (evt) {
     if (evt.target.tagName.toLowerCase() === 'img') {
       draggedItem = evt.target;
-      evt.dataTransfer.setData('text/plain', evt.target.alt);
+    } else {
+      evt.preventDefault();
+      return;
     }
   });
 
   shopElement.addEventListener('dragover', function (evt) {
     evt.preventDefault();
-    return false;
   });
 
   shopElement.addEventListener('drop', function (evt) {
     if (evt.target.classList.contains('setup-artifacts-cell')) {
       evt.target.style.backgroundColor = '';
       evt.target.appendChild(draggedItem);
+      draggedItem = null;
     }
   });
 
@@ -116,5 +88,5 @@
     evt.target.style.backgroundColor = '';
     evt.preventDefault();
   });
-})();
+})(window.util.makeDragStart);
 
